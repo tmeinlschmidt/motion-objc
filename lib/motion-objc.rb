@@ -74,7 +74,7 @@ module Motion::Project
       }
 
       @project = Xcodeproj::Project.new
-      @target  = @project.targets.new_static_library(:ios, 'MotionObjC')
+      @target = @project.new_target(:static_library, 'MotionObjC', :ios)
       @target.build_configurations.each do |config|
         config.build_settings.merge!(@config)
       end
@@ -82,9 +82,9 @@ module Motion::Project
       @files.each do |file|
         full_path = File.expand_path(app.project_dir + '/' + file)
         path = Pathname.new(full_path).relative_path_from(@project_path)
-        file_descriptions << Xcodeproj::Project::PBXNativeTarget::SourceFileDescription.new(path, nil, nil)
+        @target = @project.new_target(:static_library, 'MotionObjC', :ios)
       end
-      @target.add_source_files(file_descriptions)
+      @target.add_file_references(file_descriptions)
 
       @project.save_as(File.join(@project_path, 'MotionObjC.xcodeproj'))
     end
